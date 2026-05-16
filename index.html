@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>serotoninSEN — Système de gestion</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0d14'/%3E%3Cpolygon points='16,8 22,14 16,20 10,14' fill='%23f5a623'/%3E%3C/svg%3E"/>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #0a0d14;
+  --bg2: #111520;
+  --bg3: #161b27;
+  --card: #1a2035;
+  --card2: #1f2840;
+  --border: #2a3350;
+  --accent: #f5a623;
+  --accent2: #ff6b35;
+  --blue: #3d8ef8;
+  --green: #2ecc71;
+  --red: #e74c3c;
+  --purple: #9b59b6;
+  --text: #e8ecf4;
+  --text2: #8a94b0;
+  --text3: #5a6480;
+  --font-head: 'Syne', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+  --radius: 14px;
+  --radius-sm: 8px;
+  --shadow: 0 8px 32px rgba(0,0,0,0.4);
+  --glow: 0 0 24px rgba(245,166,35,0.15);
+}
+body.theme-light {
+  --bg: #f4f6fc;
+  --bg2: #ffffff;
+  --bg3: #eef1f9;
+  --card: #ffffff;
+  --card2: #f7f9ff;
+  --border: #d8dfef;
+  --text: #1a2035;
+  --text2: #4a5470;
+  --text3: #8a94b0;
+  --shadow: 0 2px 16px rgba(26,32,53,.08);
+  --glow: 0 0 20px rgba(245,166,35,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%}
+a{text-decoration:none;color:inherit}
+button{cursor:pointer;font-family:var(--font-body)}
+input,select,textarea{font-family:var(--font-body);font-size:16px}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:var(--bg2)}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+#login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:9999;overflow:hidden}
+.login-wrap{width:100%;max-width:420px;padding:24px;position:relative;z-index:1}
+.login-logo{text-align:center;margin-bottom:36px}
+.login-logo .bolt{font-size:52px;display:block}
+.login-logo h1{font-family:var(--font-head);font-size:34px;font-weight:800;color:var(--accent);letter-spacing:1px;margin-bottom:8px}
+.login-logo p{color:var(--text2);font-size:13px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:36px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.login-card h2{font-family:var(--font-head);font-size:20px;margin-bottom:20px;color:var(--text)}
+.form-group{margin-bottom:18px}
+.form-group label{display:block;font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:8px;font-weight:600}
+.form-group input,.form-group select,.form-group textarea{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;color:var(--text);font-size:14px}
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,166,35,.12)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;border:none;transition:all .2s}
+.btn-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 4px 16px rgba(245,166,35,.3)}
+.btn-primary:hover{transform:translateY(-2px)}
+.btn-secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+.btn-secondary:hover{background:var(--border)}
+.btn-sm{padding:7px 14px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.error-msg{color:var(--red);font-size:13px;margin-top:8px;display:none}
+#app{display:none;height:100vh;flex-direction:column}
+#app.active{display:flex}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;height:60px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:100}
+.topbar-logo{font-family:var(--font-head);font-weight:800;font-size:18px;color:var(--accent)}
+.hamburger{display:none;background:none;border:none;color:var(--text);font-size:22px}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:12px}
+.user-badge{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:13px}
+.sidebar{width:220px;background:var(--bg2);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow-y:auto}
+.nav-section{padding:16px 12px 8px;font-size:10px;color:var(--text3);text-transform:uppercase;font-weight:700}
+.nav-item{display:flex;align-items:center;gap:12px;padding:11px 16px;border-radius:var(--radius-sm);margin:2px 8px;font-size:14px;color:var(--text2);cursor:pointer;transition:all .2s;border:none;background:none}
+.nav-item:hover{background:var(--card);color:var(--text)}
+.nav-item.active{background:linear-gradient(135deg,rgba(245,166,35,.2),rgba(255,107,53,.1));color:var(--accent)}
+.main{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+.content{flex:1;padding:24px;max-width:1400px;width:100%}
+.page{display:none}
+.page.active{display:block}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:28px;flex-wrap:wrap;gap:12px}
+.page-header h2{font-family:var(--font-head);font-size:26px;font-weight:800}
+.header-actions{display:flex;gap:10px;flex-wrap:wrap}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-bottom:28px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:20px;transition:all .2s}
+.stat-card:hover{border-color:var(--accent);transform:translateY(-2px)}
+.stat-label{font-size:11px;color:var(--text2);text-transform:uppercase;font-weight:600}
+.stat-value{font-family:var(--font-head);font-size:26px;font-weight:800;color:var(--text)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:visible;margin-bottom:20px}
+.table-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.table-title{font-family:var(--font-head);font-size:16px;font-weight:700}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text2);background:var(--bg3)}
+td{padding:12px 16px;font-size:13px;border-top:1px solid var(--border)}
+tr:hover td{background:rgba(255,255,255,.02)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:rgba(46,204,113,.15);color:var(--green)}
+.badge-red{background:rgba(231,76,60,.15);color:var(--red)}
+.actions{display:flex;gap:6px}
+.icon-btn{background:none;border:1px solid var(--border);border-radius:6px;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:var(--text2)}
+.icon-btn:hover{border-color:var(--accent);color:var(--accent);background:rgba(245,166,35,.1)}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:1000;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto}
+.modal h3{font-family:var(--font-head);font-size:20px;font-weight:700;margin-bottom:24px}
+.modal-close{position:absolute;top:16px;right:16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.modal-footer{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#toast{position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px}
+.toast-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 20px;font-size:13px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px}
+.toast-item.success{border-color:var(--green)}
+.toast-item.error{border-color:var(--red)}
+@media(max-width:768px){
+  .sidebar{position:fixed;left:0;top:60px;bottom:0;z-index:200;transform:translateX(-100%);width:240px}
+  .hamburger{display:flex}
+  .content{padding:12px}
+  .header-actions .btn{flex:1;min-width:120px;justify-content:center;font-size:12px}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<div id="toast"></div>
+<div id="login-screen">
+  <div class="login-wrap">
+    <div class="login-logo">
+      <span class="bolt">⚡</span>
+      <h1>serotoninSEN</h1>
+      <p>Système de gestion intelligent</p>
+    </div>
+    <div class="login-card">
+      <h2>Connexion</h2>
+      <div class="form-group">
+        <label>Identifiant</label>
+        <input type="text" id="login-user" placeholder="Votre login" autocomplete="username"/>
+      </div>
+      <div class="form-group">
+        <label>Mot de passe</label>
+        <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password"/>
+      </div>
+      <div class="error-msg" id="login-error">Identifiant ou mot de passe incorrect</div>
+      <button class="btn btn-primary btn-full" onclick="doLogin()" style="margin-top:8px">Se connecter →</button>
+    </div>
+    <div style="text-align:center;margin-top:20px;font-size:11px;color:var(--text3)">
+      serotoninSEN © 2025 · Version 1.0
+    </div>
+  </div>
+</div>
+<div id="app">
+  <div class="topbar">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+    <div class="topbar-logo">⚡ serotoninSEN</div>
+    <div class="topbar-right">
+      <div class="user-badge" id="user-badge">
+        <span id="user-name-display">Admin</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="doLogout()">Déconnexion</button>
+    </div>
+  </div>
+  <div style="display:flex;flex:1;overflow:hidden">
+    <div class="sidebar" id="sidebar">
+      <div id="nav-menu" style="flex:1"></div>
+    </div>
+    <div class="main">
+      <div class="content">
+        <div id="page-dashboard" class="page"></div>
+        <div id="page-clients" class="page"></div>
+        <div id="page-chantiers" class="page"></div>
+        <div id="page-parametres" class="page"></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="form-modal">
+  <div class="modal">
+    <div class="modal-close" onclick="closeFormModal()">×</div>
+    <h3 id="form-modal-title">Formulaire</h3>
+    <div id="form-modal-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeFormModal()">Annuler</button>
+      <button class="btn btn-primary" id="form-modal-submit">Enregistrer</button>
+    </div>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
